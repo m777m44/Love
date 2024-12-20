@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مولد كلمات غزل باللهجة العراقية</title>
+    <style>
+        :root {
+            --primary-bg-color: #ffffff;
+            --primary-text-color: #333333;
+            --button-bg-color: #4CAF50;
+            --button-hover-bg-color: #45a049;
+            --textarea-bg-color: #f9f9f9;
+            --textarea-color: #333;
+            --highlight-color: #ff69b4;
+        }
+
+        [data-theme="dark"] {
+            --primary-bg-color: #2b2b2b;
+            --primary-text-color: #ffffff;
+            --button-bg-color: #007bff;
+            --button-hover-bg-color: #0056b3;
+            --textarea-bg-color: #444444;
+            --textarea-color: #ffffff;
+            --highlight-color: #ffb6c1;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: var(--primary-bg-color);
+            color: var(--primary-text-color);
+            text-align: center;
+            padding: 20px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: var(--primary-bg-color);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: background-color 0.3s;
+        }
+
+        h1 {
+            color: var(--primary-text-color);
+            font-size: 24px;
+        }
+
+        .welcome-message {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: var(--highlight-color);
+        }
+
+        textarea, input {
+            width: 100%;
+            margin: 10px 0;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: var(--textarea-bg-color);
+            color: var(--textarea-color);
+            resize: vertical;
+            word-wrap: break-word;
+        }
+
+        button {
+            background-color: var(--button-bg-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: background-color 0.3s ease, transform 0.3s;
+        }
+
+        button:hover {
+            background-color: var(--button-hover-bg-color);
+            transform: scale(1.1);
+        }
+
+        .actions {
+            margin-top: 20px;
+        }
+
+        .generated-texts {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+            background-color: var(--textarea-bg-color);
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .font-size-selector {
+            margin-top: 10px;
+        }
+
+        .font-size-selector input {
+            padding: 5px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 20px;
+            font-size: 20px;
+            color: var(--highlight-color);
+        }
+
+        .highlighted-text {
+            font-weight: bold;
+            transition: color 0.3s ease, font-size 0.3s ease;
+        }
+
+        .font-select {
+            margin-top: 10px;
+        }
+
+        .font-select select {
+            padding: 8px;
+            font-size: 16px;
+            border-radius: 8px;
+            background-color: var(--textarea-bg-color);
+        }
+
+        .notification {
+            display: none;
+            background-color: #4caf50;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            transition: opacity 0.5s ease-out;
+        }
+
+        .font-size-selector input {
+            width: 80%;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="welcome-message">مرحباً بك في مولد كلمات الغزل باللهجة العراقية! استمتع بإنشاء أجمل العبارات.</div>
+
+        <h1>مولد كلمات غزل باللهجة العراقية</h1>
+
+        <textarea id="output" placeholder="ستظهر العبارات هنا" readonly></textarea>
+
+        <!-- Font size input range (slider) -->
+        <div class="font-size-selector">
+            <label for="fontSize">حجم الخط: </label>
+            <input type="range" id="fontSizeSlider" min="15" max="50" value="20" oninput="changeFontSize()">
+            <span id="fontSizeValue">20px</span>
+        </div>
+
+        <!-- Font type selector -->
+        <div class="font-select">
+            <label for="fontType">اختيار نوع الخط: </label>
+            <select id="fontType" onchange="changeFontFamily()">
+                <option value="Arial, sans-serif">Arial</option>
+                <option value="Courier New, monospace">Courier New</option>
+                <option value="Tahoma, sans-serif">Tahoma</option>
+                <option value="Verdana, sans-serif">Verdana</option>
+            </select>
+        </div>
+
+        <!-- Buttons for generating and copying text -->
+        <div class="actions">
+            <button onclick="generateText()">توليد كلمة غزل</button>
+            <button onclick="generateMultipleTexts()">توليد عدة عبارات</button>
+            <button onclick="copyGeneratedText()">نسخ العباراة العلوية</button>
+            <button onclick="copyAllTexts()">نسخ العبارات السفلية</button>
+            <button onclick="clearText()">مسح النص</button>
+            <button onclick="changeTextColor()">تغيير لون النص</button>
+        </div>
+
+        <!-- Section for displaying generated texts -->
+        <div class="generated-texts" id="generatedTexts"></div>
+
+        <!-- Toggle Dark/Light Mode -->
+        <div class="actions">
+            <button onclick="toggleTheme()">تبديل الوضع</button>
+        </div>
+
+        <!-- Loading spinner -->
+        <div class="loader" id="loader">جاري التوليد...</div>
+
+        <!-- Notification message -->
+        <div class="notification" id="notification">تم النسخ بنجاح!</div>
+    </div>
+
+    <script>
+        const phrases = [
+            "ڪلبي ❤",
+            "انتي القمر اللي يضوي لياليَّ المظلمة.",
+            "انتي النسمه اللي تخلي روحي تهدأ.",
+            "ماڪدر بدونج، انتي كل حياتي.",
+            "انتي الشمس اللي تشرق بحياتي وتخليني عايش.",
+            "عيونج تشبه نجوم السما، تخلي الدنيا أجمل.",
+            "انتي بسمتي وضحكتي بكل يوم.",
+            "حبي إلج مثل البحر، ما ينتهي ولا يتبدل.",
+            "انتي الجنه اللي أتمناها بكل لحظة.",
+            "صوتج مثل الموسيقى اللي تطرب روحي.",
+            "وجودج بحياتي أكبر نعمة من الله.",
+            "انتي الحلم اللي صار حقيقة بحياتي.",
+            "ضحكتج تخلي الدنيا ألوان.",
+            "كلشي بيج يخبل، انتي السحر كله.",
+            "انتي نبض كلبي اللي ما يوقف أبد.",
+            "كل لحظه وياج تسوى عمر كامل.",
+            "انتي سبب كل سعادة بحياتي.",
+            "انتي النور اللي يخلي عتمتي تختفي.",
+            "من شفتج، كلشي تغير بحياتي للأحسن.",
+            "انتي الهوى اللي أتنفسه كل يوم.",
+            "وجهج مثل القمر ليلة اكتماله.",
+            "ڪلامج يعطر روحي ويخليها تهدأ.",
+            "كل حرف من اسمج يخبلني ويخليني أعشقج أكثر.",
+            "انتي كل حياتي وما أقدر أعيش بدونج.",
+            "انتي الزهرة اللي تزين حديقتي.",
+            "ضحكتج أغلى من كل كنوز الدنيا.",
+            "وجودج يخليني أقوى وأحلى.",
+            "انتي أغنية الحب اللي ما تخلص.",
+            "قلبي مليان حب لج مثل ما السما مليانة نجوم.",
+            "انتي الحنان والحب اللي محتاجه كل يوم.",
+            "صوتج يسحرني وعيونج ياخذني لعالم ثاني.",
+            "انتي مثل البلسم لجروحي."
+        ];
+
+        let currentColor = "#ff69b4"; // Default color
+
+        // Toggle dark and light theme
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', currentTheme === 'dark' ? 'light' : 'dark');
+        }
+
+        // Generate random text
+        function generateText() {
+            showLoader();
+            const randomIndex = Math.floor(Math.random() * phrases.length);
+            const output = document.getElementById("output");
+            output.value = phrases[randomIndex];
+            output.classList.add('highlighted-text');
+            output.style.color = currentColor;
+            showNotification();
+            hideLoader();
+        }
+
+        // Generate multiple texts
+        function generateMultipleTexts() {
+            showLoader();
+            const randomTexts = [];
+            for (let i = 0; i < 5; i++) {
+                const randomIndex = Math.floor(Math.random() * phrases.length);
+                randomTexts.push(phrases[randomIndex]);
+            }
+            const generatedTextsDiv = document.getElementById("generatedTexts");
+            generatedTextsDiv.innerHTML = randomTexts.join("<br><br>");
+            generatedTextsDiv.style.color = currentColor;
+            showNotification();
+            hideLoader();
+        }
+
+        // Copy generated text (from the upper textarea)
+        function copyGeneratedText() {
+            const output = document.getElementById("output");
+            output.select();
+            document.execCommand("copy");
+            showNotification();
+        }
+
+        // Copy all texts from the generated texts section
+        function copyAllTexts() {
+            const generatedTextsDiv = document.getElementById("generatedTexts");
+            const range = document.createRange();
+            range.selectNodeContents(generatedTextsDiv);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+            document.execCommand("copy");
+            showNotification();
+        }
+
+        // Clear the text area
+        function clearText() {
+            document.getElementById("output").value = '';
+            document.getElementById("generatedTexts").innerHTML = '';
+        }
+
+        // Change the text color to a random color
+        function changeTextColor() {
+            currentColor = `#${Math.floor(Math.random()*16777215).toString(16)}`;
+            const output = document.getElementById("output");
+            output.style.color = currentColor;
+            const generatedTextsDiv = document.getElementById("generatedTexts");
+            generatedTextsDiv.style.color = currentColor;
+        }
+
+        // Show the loading indicator
+        function showLoader() {
+            document.getElementById('loader').style.display = 'block';
+        }
+
+        // Hide the loading indicator
+        function hideLoader() {
+            document.getElementById('loader').style.display = 'none';
+        }
+
+        // Show notification
+        function showNotification() {
+            const notification = document.getElementById("notification");
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+            }, 1500);
+        }
+
+        // Change the font size based on slider
+        function changeFontSize() {
+            const fontSizeSlider = document.getElementById("fontSizeSlider");
+            const fontSizeValue = document.getElementById("fontSizeValue");
+            fontSizeValue.textContent = fontSizeSlider.value + "px";
+            const output = document.getElementById("output");
+            output.style.fontSize = fontSizeSlider.value + "px";
+            const generatedTextsDiv = document.getElementById("generatedTexts");
+            generatedTextsDiv.style.fontSize = fontSizeSlider.value + "px";
+        }
+
+        // Change the font family based on user selection
+        function changeFontFamily() {
+            const fontType = document.getElementById("fontType").value;
+            const output = document.getElementById("output");
+            output.style.fontFamily = fontType;
+            const generatedTextsDiv = document.getElementById("generatedTexts");
+            generatedTextsDiv.style.fontFamily = fontType;
+        }
+    </script>
+</body>
+</html>
